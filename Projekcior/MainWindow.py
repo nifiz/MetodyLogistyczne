@@ -1,8 +1,18 @@
-from tkinter import *
+import tkinter as tk
 
-root = Tk()
-root.title("Logistyka")
-root.configure(background="white")
-root.minsize(500, 400)  # width, height
-root.maxsize(1024, 800)
-root.mainloop()
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.btn = tk.Button(self, text="Click me!", command=self.say_hello)
+        self.btn.pack(padx=120, pady=30)
+
+    def say_hello(self):
+        print("Hello, Tkinter!")
+
+if __name__ == "__main__":
+    app = App()
+    app.title("Logistyka")
+    app.configure(background="white")
+    app.minsize(700, 600)
+    app.maxsize(1024, 800)
+    app.mainloop()
