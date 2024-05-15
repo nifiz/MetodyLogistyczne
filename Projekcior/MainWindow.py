@@ -1,5 +1,6 @@
 import tkinter as tk
 
+
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -9,10 +10,4 @@ class App(tk.Tk):
     def say_hello(self):
         print("Hello, Tkinter!")
 
-if __name__ == "__main__":
-    app = App()
-    app.title("Logistyka")
-    app.configure(background="white")
-    app.minsize(700, 600)
-    app.maxsize(1024, 800)
-    app.mainloop()
+
