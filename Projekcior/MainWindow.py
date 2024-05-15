@@ -10,5 +10,8 @@ class App(tk.Tk):
         self.configure(background="#141218")
         self.state("zoomed")
 
+        toolbar = tk.Frame(self, bg="#141218", height=65, highlightbackground="#6750A4", highlightthickness=1)
+        toolbar.pack(side="top", fill="x")
+
     def say_hello(self):
         print("sample_text")
