@@ -20,6 +20,13 @@ class App(tk.Tk):
         self.configure(background=bgColour)
         self.state("zoomed")
 
+        # Zeby sie nie psulo przy zumie
+        try:
+            from ctypes import windll
+            windll.shcore.SetProcessDpiAwareness(1)
+        except Exception as e:
+            print(e)
+
         toolbar = tk.Frame(self, bg=bgColour, height=frameHeight, highlightbackground=borderColour, highlightthickness=1)
         toolbar.pack(side="top", fill="x")
         toolbarMenu = tk.Frame(toolbar, bg=bgColour, width=menuWidth, height=frameHeight, highlightbackground=borderColour)
