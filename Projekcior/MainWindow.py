@@ -98,7 +98,7 @@ class App(tk.Tk):
 
         self.main_button = tk.Button(self.main_frame, image=self.load_data, bg=bgColour, borderwidth=0,
                                      highlightthickness=0, activebackground=bgColour,
-                                     command=self.load_data_action(), cursor="hand2")
+                                     command=self.load_data_action, cursor="hand2")
         self.main_button.pack(pady=30)
 
     # Funkcje
@@ -109,6 +109,12 @@ class App(tk.Tk):
             return self.map_separator
         elif button == self.data_button:
             return self.data_separator
+
+    def disable_button(self, button, *buttons):
+        button.config(state=tk.DISABLED, cursor="")
+        self.enable_buttons(*buttons)
+        separator = self.get_separator(button)
+        separator.place_configure(rely=1.0, y=1)
 
     def enable_buttons(self, *buttons):
         for button in buttons:
@@ -123,26 +129,14 @@ class App(tk.Tk):
         print("logo")
 
     def anal_action(self):
-        # Ustaw styl dla przycisnietego przycisku
-        self.anal_button.config(state=tk.DISABLED, cursor="")
-        self.enable_buttons(self.data_button, self.map_button)
-        separator = self.anal_separator
-        separator.place_configure(rely=1.0, y=1)
+        self.disable_button(self.anal_button, self.data_button, self.map_button)
 
     def map_action(self):
-        # Ustaw styl dla przycisnietego przycisku
-        self.map_button.config(state=tk.DISABLED, cursor="")
-        self.enable_buttons(self.anal_button, self.data_button)
-        separator = self.map_separator
-        separator.place_configure(rely=1.0, y=1)
+        self.disable_button(self.map_button, self.data_button, self.anal_button)
 
 
     def data_action(self):
-        # Ustaw styl dla przycisnietego przycisku
-        self.data_button.config(state=tk.DISABLED, cursor="")
-        self.enable_buttons(self.anal_button, self.map_button)
-        separator = self.data_separator
-        separator.place_configure(rely=1.0, y=1)
+        self.disable_button(self.data_button, self.anal_button, self.map_button)
 
     def load_data_action(self):
         print("load_data")
