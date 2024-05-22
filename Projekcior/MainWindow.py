@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 
 frameHeight = 100
 menuWidth = 135
@@ -9,6 +10,7 @@ tabsWidth = 3*buttonWidth
 bgColour = "#141218"
 borderColour = "#6750A4"
 fontColour = "#CAC4D0"
+disabledfontColour ="#E6E0E9"
 
 class App(tk.Tk):
     def __init__(self):
@@ -43,44 +45,101 @@ class App(tk.Tk):
         # Obrazki
         self.menu_image = tk.PhotoImage(file=r"img\burger.png")
         self.empty_state_image = tk.PhotoImage(file=r"img\empty-state-image.png")
-        self.exit_button = tk.PhotoImage(file=r"img\exit_button.png")
+        self.exit_button_img = tk.PhotoImage(file=r"img\exit_button.png")
         self.load_data = tk.PhotoImage(file=r"img\load_data.png")
 
         # Przyciski
-        menu_button = tk.Button(toolbarMenu, image=self.menu_image, bg=bgColour, height=15, width=18,
-                                highlightthickness=0, borderwidth=0)
-        logo_button = tk.Button(toolbarLogo, height=5, text="Paliwska", fg="white", bg=bgColour,
-                                width=40, borderwidth=0, highlightthickness=0, font="Roboto 12 bold")
-        analButton = tk.Button(toolbarTabs, height=5, text="Analiza", fg=fontColour, bg=bgColour, width=33,
-                               borderwidth=0, highlightthickness=0, font="Roboto")
-        mapButton = tk.Button(toolbarTabs, height=5, text="Mapa", fg=fontColour, bg=bgColour, width=33, borderwidth=0,
-                              highlightthickness=0, font="Roboto")
-        dataButton = tk.Button(toolbarTabs, height=5, text="Dane", fg=fontColour, bg=bgColour, width=33, borderwidth=0,
-                               highlightthickness=0, font="Roboto")
-        exit_button = tk.Button(toolbarExit, image=self.exit_button, height=5, bg=bgColour, width=15,
-                                borderwidth=0, highlightthickness=0, padx=0, pady=0)
+        self.menu_button = tk.Button(toolbarMenu, image=self.menu_image, bg=bgColour, height=15, width=18,
+                                highlightthickness=0, borderwidth=0, activebackground=bgColour)
+        self.logo_button = tk.Button(toolbarLogo, height=5, text="Paliwska", fg="white", bg=bgColour,
+                                width=40, borderwidth=0, highlightthickness=0, font="Roboto 12 bold",
+                                activebackground=bgColour, activeforeground="white")
+        self.anal_button = tk.Button(toolbarTabs, height=5, text="Analiza", fg=fontColour, bg=bgColour, width=33,
+                                borderwidth=0, highlightthickness=0, font="Roboto", activebackground=bgColour,
+                                activeforeground=fontColour, disabledforeground=disabledfontColour, command=self.anal_action)
+        self.map_button = tk.Button(toolbarTabs, height=5, text="Mapa", fg=fontColour, bg=bgColour, width=33, borderwidth=0,
+                               highlightthickness=0, font="Roboto", activebackground=bgColour,
+                               activeforeground=fontColour,  disabledforeground=disabledfontColour, command=self.map_action)
+        self.data_button = tk.Button(toolbarTabs, height=5, text="Dane", fg=fontColour, bg=bgColour, width=33, borderwidth=0,
+                               highlightthickness=0, font="Roboto",  disabledforeground=disabledfontColour, activebackground=bgColour,
+                               activeforeground=fontColour, command=self.data_action)
+        self.exit_button = tk.Button(toolbarExit, image=self.exit_button_img, height=5, bg=bgColour, width=15,
+                                borderwidth=0, highlightthickness=0, padx=0, pady=0, activebackground=bgColour)
 
+        self.menu_button.pack(expand=True, fill="both", padx=15)
+        self.logo_button.pack(expand=True, fill="both")
+        self.anal_button.pack(side=tk.LEFT, expand=True, fill="both")
+        self.map_button.pack(side=tk.LEFT, expand=True, fill="both")
+        self.data_button.pack(side=tk.LEFT, expand=True, fill="both")
+        self.exit_button.pack(side=tk.RIGHT, expand=True, fill="both")
 
-        menu_button.pack(expand=True, fill="both", padx=15)
-        logo_button.pack(expand=True, fill="both")
-        analButton.pack(side=tk.LEFT, expand=True, fill="both")
-        mapButton.pack(side=tk.LEFT, expand=True, fill="both")
-        dataButton.pack(side=tk.LEFT, expand=True, fill="both")
-        exit_button.pack(side=tk.RIGHT, expand=True, fill="both")
+        self.menu_button.config(width=41, height=82)
+        self.exit_button.config(width=352, height=82)
 
-        menu_button.config(width=41, height=82)
-        exit_button.config(width=352, height=82)
+        #Separatory czyli te kreski przy kliknieciu
+        self.anal_separator = ttk.Separator(orient="horizontal")
+        self.anal_separator.place(in_=self.anal_button, x=0, y=-1000, rely=1.0, height=2, relwidth=1.0)
+        self.map_separator = ttk.Separator(orient="horizontal")
+        self.map_separator.place(in_=self.map_button, x=0, y=-1000, rely=1.0, height=2, relwidth=1.0)
+        self.data_separator = ttk.Separator(orient="horizontal")
+        self.data_separator.place(in_=self.data_button, x=0, y=-1000, rely=1.0, height=2, relwidth=1.0)
 
-
+        # Main frame
         self.main_frame = tk.Frame(self, bg=bgColour)
         self.main_frame.pack(expand=True, fill=tk.BOTH)
 
         self.image_label = tk.Label(self.main_frame, image=self.empty_state_image, bg=bgColour)
         self.image_label.pack(pady=(100, 0))
 
-        self.main_button = tk.Button(self.main_frame, image=self.load_data, bg=bgColour, borderwidth=0, highlightthickness=0)
+        self.main_button = tk.Button(self.main_frame, image=self.load_data, bg=bgColour, borderwidth=0,
+                                     highlightthickness=0, activebackground=bgColour)
         self.main_button.pack(pady=30)
 
+    # Funkcje
+    def get_separator(self, button):
+        if button == self.anal_button:
+            return self.anal_separator
+        elif button == self.map_button:
+            return self.map_separator
+        elif button == self.data_button:
+            return self.data_separator
+
+    def enable_buttons(self, *buttons):
+        for button in buttons:
+            button.config(state=tk.NORMAL)
+            separator = self.get_separator(button)
+            separator.place_configure(rely=1.0, y=-1000)
+
+    def menu_action(self):
+        print("Menu")
+
+    def logo_action(self):
+        print("logo")
+
+    def anal_action(self):
+        # Ustaw styl dla przycisnietego przycisku
+        self.anal_button.config(state=tk.DISABLED)
+        self.enable_buttons(self.data_button, self.map_button)
+        separator = self.anal_separator
+        separator.place_configure(rely=1.0, y=1)
+
+    def map_action(self):
+        # Ustaw styl dla przycisnietego przycisku
+        self.map_button.config(state=tk.DISABLED)
+        self.enable_buttons(self.anal_button, self.data_button)
+        separator = self.map_separator
+        separator.place_configure(rely=1.0, y=1)
+
+
+    def data_action(self):
+        # Ustaw styl dla przycisnietego przycisku
+        self.data_button.config(state=tk.DISABLED)
+        self.enable_buttons(self.anal_button, self.map_button)
+        separator = self.data_separator
+        separator.place_configure(rely=1.0, y=1)
+
+    def load_data_action(self):
+        print("load_data")
 
     def say_hello(self):
         print("sample_text")
