@@ -112,7 +112,7 @@ class App(tk.Tk):
 
     def enable_buttons(self, *buttons):
         for button in buttons:
-            button.config(state=tk.NORMAL)
+            button.config(state=tk.NORMAL, cursor="hand2")
             separator = self.get_separator(button)
             separator.place_configure(rely=1.0, y=-1000)
 
@@ -124,14 +124,14 @@ class App(tk.Tk):
 
     def anal_action(self):
         # Ustaw styl dla przycisnietego przycisku
-        self.anal_button.config(state=tk.DISABLED)
+        self.anal_button.config(state=tk.DISABLED, cursor="")
         self.enable_buttons(self.data_button, self.map_button)
         separator = self.anal_separator
         separator.place_configure(rely=1.0, y=1)
 
     def map_action(self):
         # Ustaw styl dla przycisnietego przycisku
-        self.map_button.config(state=tk.DISABLED)
+        self.map_button.config(state=tk.DISABLED, cursor="")
         self.enable_buttons(self.anal_button, self.data_button)
         separator = self.map_separator
         separator.place_configure(rely=1.0, y=1)
@@ -139,7 +139,7 @@ class App(tk.Tk):
 
     def data_action(self):
         # Ustaw styl dla przycisnietego przycisku
-        self.data_button.config(state=tk.DISABLED)
+        self.data_button.config(state=tk.DISABLED, cursor="")
         self.enable_buttons(self.anal_button, self.map_button)
         separator = self.data_separator
         separator.place_configure(rely=1.0, y=1)
