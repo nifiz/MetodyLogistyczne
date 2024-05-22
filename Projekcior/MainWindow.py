@@ -50,21 +50,26 @@ class App(tk.Tk):
 
         # Przyciski
         self.menu_button = tk.Button(toolbarMenu, image=self.menu_image, bg=bgColour, height=15, width=18,
-                                highlightthickness=0, borderwidth=0, activebackground=bgColour)
+                                highlightthickness=0, borderwidth=0, activebackground=bgColour,
+                                command=self.menu_action, cursor="hand2")
         self.logo_button = tk.Button(toolbarLogo, height=5, text="Paliwska", fg="white", bg=bgColour,
                                 width=40, borderwidth=0, highlightthickness=0, font="Roboto 12 bold",
-                                activebackground=bgColour, activeforeground="white")
+                                activebackground=bgColour, activeforeground="white",
+                                command=self.logo_action, cursor="hand2")
         self.anal_button = tk.Button(toolbarTabs, height=5, text="Analiza", fg=fontColour, bg=bgColour, width=33,
                                 borderwidth=0, highlightthickness=0, font="Roboto", activebackground=bgColour,
-                                activeforeground=fontColour, disabledforeground=disabledfontColour, command=self.anal_action)
+                                activeforeground=fontColour, disabledforeground=disabledfontColour,
+                                command=self.anal_action, cursor="hand2")
         self.map_button = tk.Button(toolbarTabs, height=5, text="Mapa", fg=fontColour, bg=bgColour, width=33, borderwidth=0,
                                highlightthickness=0, font="Roboto", activebackground=bgColour,
-                               activeforeground=fontColour,  disabledforeground=disabledfontColour, command=self.map_action)
+                               activeforeground=fontColour,  disabledforeground=disabledfontColour,
+                               command=self.map_action, cursor="hand2")
         self.data_button = tk.Button(toolbarTabs, height=5, text="Dane", fg=fontColour, bg=bgColour, width=33, borderwidth=0,
                                highlightthickness=0, font="Roboto",  disabledforeground=disabledfontColour, activebackground=bgColour,
-                               activeforeground=fontColour, command=self.data_action)
+                               activeforeground=fontColour, command=self.data_action, cursor="hand2")
         self.exit_button = tk.Button(toolbarExit, image=self.exit_button_img, height=5, bg=bgColour, width=15,
-                                borderwidth=0, highlightthickness=0, padx=0, pady=0, activebackground=bgColour)
+                                borderwidth=0, highlightthickness=0, padx=0, pady=0, activebackground=bgColour,
+                                cursor="hand2")
 
         self.menu_button.pack(expand=True, fill="both", padx=15)
         self.logo_button.pack(expand=True, fill="both")
@@ -92,7 +97,8 @@ class App(tk.Tk):
         self.image_label.pack(pady=(100, 0))
 
         self.main_button = tk.Button(self.main_frame, image=self.load_data, bg=bgColour, borderwidth=0,
-                                     highlightthickness=0, activebackground=bgColour)
+                                     highlightthickness=0, activebackground=bgColour,
+                                     command=self.load_data_action(), cursor="hand2")
         self.main_button.pack(pady=30)
 
     # Funkcje
