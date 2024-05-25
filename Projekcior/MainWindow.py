@@ -149,7 +149,7 @@ class App(tk.Tk):
         self.disable_button(self.data_button, self.anal_button, self.map_button)
 
     def parser(cls, file_path):
-        df = pd.read_excel(file_path, sheet_name='Projekt I - petrol station', skiprows=9)
+        df = pd.read_excel(file_path, sheet_name='Deliveries per Customer (detail', skiprows=9)
 
         date = df["Unnamed: 0"]
         dav = df["Unnamed: 2"]
