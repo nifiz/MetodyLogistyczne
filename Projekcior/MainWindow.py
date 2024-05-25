@@ -163,7 +163,7 @@ class App(tk.Tk):
     def load_data_action(self):
         data_file = filedialog.askopenfilename(title="Wybierz plik z danymi",
                                                filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")])
-        data = self.parser(data_file)
+        self.parser(data_file)
 
 
 
