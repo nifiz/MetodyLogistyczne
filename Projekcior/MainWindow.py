@@ -1,22 +1,25 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog
+import pandas as pd
 
 frameHeight = 100
 menuWidth = 135
 logoWidth = 340
 exitWidth = 220
 buttonWidth = 326
-tabsWidth = 3*buttonWidth
+tabsWidth = 3 * buttonWidth
 bgColour = "#141218"
 borderColour = "#6750A4"
 fontColour = "#CAC4D0"
-disabledfontColour ="#E6E0E9"
+disabledfontColour = "#E6E0E9"
+
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Logistyka")
-        self.minsize(700, 300) # randomowe wartości póki co
+        self.minsize(700, 300)  # randomowe wartości póki co
         self.maxsize(1920, 1080)
         self.geometry("1920x1080")
         self.configure(background=bgColour)
@@ -29,12 +32,17 @@ class App(tk.Tk):
         except Exception as e:
             print(e)
 
-        toolbar = tk.Frame(self, bg=bgColour, height=frameHeight, highlightbackground=borderColour, highlightthickness=1)
+        toolbar = tk.Frame(self, bg=bgColour, height=frameHeight, highlightbackground=borderColour,
+                           highlightthickness=1)
         toolbar.pack(side="top", fill="x")
-        toolbarMenu = tk.Frame(toolbar, bg=bgColour, width=menuWidth, height=frameHeight, highlightbackground=borderColour)
-        toolbarLogo = tk.Frame(toolbar, bg=bgColour, width=logoWidth, height=frameHeight, highlightbackground=borderColour)
-        toolbarTabs = tk.Frame(toolbar, bg=bgColour, width=tabsWidth, height=frameHeight, highlightbackground=borderColour, highlightthickness=0)
-        toolbarExit = tk.Frame(toolbar, bg=bgColour, width=exitWidth, height=frameHeight, highlightbackground=borderColour, highlightthickness=0)
+        toolbarMenu = tk.Frame(toolbar, bg=bgColour, width=menuWidth, height=frameHeight,
+                               highlightbackground=borderColour)
+        toolbarLogo = tk.Frame(toolbar, bg=bgColour, width=logoWidth, height=frameHeight,
+                               highlightbackground=borderColour)
+        toolbarTabs = tk.Frame(toolbar, bg=bgColour, width=tabsWidth, height=frameHeight,
+                               highlightbackground=borderColour, highlightthickness=0)
+        toolbarExit = tk.Frame(toolbar, bg=bgColour, width=exitWidth, height=frameHeight,
+                               highlightbackground=borderColour, highlightthickness=0)
 
         toolbarMenu.pack(side="left")
         toolbarLogo.pack(side="left")
@@ -50,26 +58,29 @@ class App(tk.Tk):
 
         # Przyciski
         self.menu_button = tk.Button(toolbarMenu, image=self.menu_image, bg=bgColour, height=15, width=18,
-                                highlightthickness=0, borderwidth=0, activebackground=bgColour,
-                                command=self.menu_action, cursor="hand2")
+                                     highlightthickness=0, borderwidth=0, activebackground=bgColour,
+                                     command=self.menu_action, cursor="hand2")
         self.logo_button = tk.Button(toolbarLogo, height=5, text="Paliwska", fg="white", bg=bgColour,
-                                width=40, borderwidth=0, highlightthickness=0, font="Roboto 12 bold",
-                                activebackground=bgColour, activeforeground="white",
-                                command=self.logo_action, cursor="hand2")
+                                     width=40, borderwidth=0, highlightthickness=0, font="Roboto 12 bold",
+                                     activebackground=bgColour, activeforeground="white",
+                                     command=self.logo_action, cursor="hand2")
         self.anal_button = tk.Button(toolbarTabs, height=5, text="Analiza", fg=fontColour, bg=bgColour, width=33,
-                                borderwidth=0, highlightthickness=0, font="Roboto", activebackground=bgColour,
-                                activeforeground=fontColour, disabledforeground=disabledfontColour,
-                                command=self.anal_action, cursor="hand2")
-        self.map_button = tk.Button(toolbarTabs, height=5, text="Mapa", fg=fontColour, bg=bgColour, width=33, borderwidth=0,
-                               highlightthickness=0, font="Roboto", activebackground=bgColour,
-                               activeforeground=fontColour,  disabledforeground=disabledfontColour,
-                               command=self.map_action, cursor="hand2")
-        self.data_button = tk.Button(toolbarTabs, height=5, text="Dane", fg=fontColour, bg=bgColour, width=33, borderwidth=0,
-                               highlightthickness=0, font="Roboto",  disabledforeground=disabledfontColour, activebackground=bgColour,
-                               activeforeground=fontColour, command=self.data_action, cursor="hand2")
+                                     borderwidth=0, highlightthickness=0, font="Roboto", activebackground=bgColour,
+                                     activeforeground=fontColour, disabledforeground=disabledfontColour,
+                                     command=self.anal_action, cursor="hand2")
+        self.map_button = tk.Button(toolbarTabs, height=5, text="Mapa", fg=fontColour, bg=bgColour, width=33,
+                                    borderwidth=0,
+                                    highlightthickness=0, font="Roboto", activebackground=bgColour,
+                                    activeforeground=fontColour, disabledforeground=disabledfontColour,
+                                    command=self.map_action, cursor="hand2")
+        self.data_button = tk.Button(toolbarTabs, height=5, text="Dane", fg=fontColour, bg=bgColour, width=33,
+                                     borderwidth=0,
+                                     highlightthickness=0, font="Roboto", disabledforeground=disabledfontColour,
+                                     activebackground=bgColour, activeforeground=fontColour, command=self.data_action,
+                                     cursor="hand2")
         self.exit_button = tk.Button(toolbarExit, image=self.exit_button_img, height=5, bg=bgColour, width=15,
-                                borderwidth=0, highlightthickness=0, padx=0, pady=0, activebackground=bgColour,
-                                cursor="hand2")
+                                     borderwidth=0, highlightthickness=0, padx=0, pady=0, activebackground=bgColour,
+                                     cursor="hand2", command=self.destroy)
 
         self.menu_button.pack(expand=True, fill="both", padx=15)
         self.logo_button.pack(expand=True, fill="both")
@@ -81,7 +92,7 @@ class App(tk.Tk):
         self.menu_button.config(width=41, height=82)
         self.exit_button.config(width=352, height=82)
 
-        #Separatory czyli te kreski przy kliknieciu
+        # Separatory czyli te kreski przy kliknieciu
         self.anal_separator = ttk.Separator(orient="horizontal")
         self.anal_separator.place(in_=self.anal_button, x=0, y=-1000, rely=1.0, height=2, relwidth=1.0)
         self.map_separator = ttk.Separator(orient="horizontal")
@@ -134,12 +145,29 @@ class App(tk.Tk):
     def map_action(self):
         self.disable_button(self.map_button, self.data_button, self.anal_button)
 
-
     def data_action(self):
         self.disable_button(self.data_button, self.anal_button, self.map_button)
 
+    def parser(cls, file_path):
+        df = pd.read_excel(file_path, sheet_name='Deliveries per Customer (detail', skiprows=9)
+
+        date = df["Unnamed: 0"]
+        dav = df["Unnamed: 2"]
+        time = df["Unnamed: 3"]
+        dane_dostaw = df["Unnamed: 25"]
+        ULG95 = df["Unnamed: 26"]
+        DK = df["Unnamed: 27"]
+        ULTSU = df["Unnamed: 28"]
+        ULTDK = df["Unnamed: 29"]
+
     def load_data_action(self):
-        print("load_data")
+        data_file = filedialog.askopenfilename(title="Wybierz plik z danymi",
+                                               filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")])
+        data = self.parser(data_file)
+
+
+
+
 
     def say_hello(self):
         print("sample_text")
