@@ -126,12 +126,10 @@ class App(tk.Tk):
         self.menu_frame3.pack(fill="x")
 
         self.menu_button1 = tk.Button(self.menu_frame1, text="Wczytaj dane", bg=bgColour, fg="white",
-                                      activebackground=activeButtonBgColour, borderwidth=1,
-                                      highlightthickness=1, highlightbackground=borderColour, cursor="hand2",
+                                      activebackground=activeButtonBgColour, cursor="hand2",
                                       font="Roboto 12", height=2, command=self.load_data_action)
         self.menu_button2 = tk.Button(self.menu_frame2, text="Zapisz", bg=bgColour, fg="white",
-                                      activebackground=activeButtonBgColour, borderwidth=1,
-                                      highlightthickness=1, highlightbackground=borderColour, cursor="hand2",
+                                      activebackground=activeButtonBgColour, cursor="hand2",
                                       font="Roboto 12", height=2, command=self.save_to_file)
         self.menu_button3 = tk.Button(self.menu_frame3, text="Wyjdź", bg=bgColour, fg="white",
                                       activebackground=activeButtonBgColour, cursor="hand2",
