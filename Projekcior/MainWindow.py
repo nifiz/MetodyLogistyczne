@@ -13,6 +13,7 @@ bgColour = "#141218"
 borderColour = "#6750A4"
 fontColour = "#CAC4D0"
 disabledfontColour = "#E6E0E9"
+activeButtonBgColour = "#a680ff"
 
 
 class App(tk.Tk):
@@ -112,6 +113,34 @@ class App(tk.Tk):
                                      command=self.load_data_action, cursor="hand2")
         self.main_button.pack(pady=30)
 
+        # Klikniecie w burgera
+        self.menu_frame = tk.Frame(self.main_frame, bg=bgColour, highlightbackground=borderColour, highlightthickness=1)
+
+        # Przyciski po kliknieciu w burgera
+        self.menu_frame1 = tk.Frame(self.menu_frame, highlightthickness=1, highlightbackground=borderColour)
+        self.menu_frame2 = tk.Frame(self.menu_frame, highlightthickness=1, highlightbackground=borderColour)
+        self.menu_frame3 = tk.Frame(self.menu_frame, highlightthickness=1, highlightbackground=borderColour)
+
+        self.menu_frame1.pack(fill="x")
+        self.menu_frame2.pack(fill="x")
+        self.menu_frame3.pack(fill="x")
+
+        self.menu_button1 = tk.Button(self.menu_frame1, text="Wczytaj dane", bg=bgColour, fg="white",
+                                      activebackground=activeButtonBgColour, borderwidth=1,
+                                      highlightthickness=1, highlightbackground=borderColour, cursor="hand2",
+                                      font="Roboto 12", height=2, command=self.load_data_action)
+        self.menu_button2 = tk.Button(self.menu_frame2, text="Zapisz", bg=bgColour, fg="white",
+                                      activebackground=activeButtonBgColour, borderwidth=1,
+                                      highlightthickness=1, highlightbackground=borderColour, cursor="hand2",
+                                      font="Roboto 12", height=2, command=self.save_to_file)
+        self.menu_button3 = tk.Button(self.menu_frame3, text="Wyjdź", bg=bgColour, fg="white",
+                                      activebackground=activeButtonBgColour, cursor="hand2",
+                                      font="Roboto 12", height=2, command=self.destroy)
+
+        self.menu_button1.pack(fill="x")
+        self.menu_button2.pack(fill="x")
+        self.menu_button3.pack(fill="x")
+
     # Funkcje
     def get_separator(self, button):
         if button == self.anal_button:
@@ -134,7 +163,13 @@ class App(tk.Tk):
             separator.place_configure(rely=1.0, y=-1000)
 
     def menu_action(self):
-        print("Menu")
+        if self.menu_frame.winfo_ismapped():
+            self.menu_frame.place_forget()
+        else:
+            self.menu_frame.place(x=0, y=0, relwidth=0.2)
+
+    def save_to_file(self):
+        print("save_to_file")
 
     def logo_action(self):
         print("logo")
