@@ -108,16 +108,6 @@ class App(tk.Tk):
         self.main_frame = tk.Frame(self, bg=bgColour)
         self.main_frame.pack(expand=True, fill=tk.BOTH)
 
-
-
-        #self.image_label = tk.Label(self.main_frame, image=self.empty_state_image, bg=bgColour)
-        #self.image_label.pack(pady=(100, 0))
-
-        #self.main_button = tk.Button(self.main_frame, image=self.load_data, bg=bgColour, borderwidth=0,
-        #                             highlightthickness=0, activebackground=bgColour,
-        #                             command=self.load_data_action, cursor="hand2")
-        #self.main_button.pack(pady=30)
-
         # Klikniecie w burgera
         self.menu_frame = tk.Frame(self.main_frame, bg=bgColour, highlightbackground=borderColour, highlightthickness=1)
 
@@ -148,6 +138,15 @@ class App(tk.Tk):
         # Anal button co ma sie pojawic po kliknieciu co to za skladnia ???
         self.left_frame = tk.Frame(self.main_frame, width=300, height=600, bg="#1E1B22")
         self.plot_frame = tk.Frame(self.main_frame, bg=bgColour)
+
+        # Data button co ma sie pojawic po kliknieciu
+        self.image_label = tk.Label(self.main_frame, image=self.empty_state_image, bg=bgColour)
+        #self.image_label.pack(pady=(100, 0))
+
+        self.laduj_dane = tk.Button(self.main_frame, image=self.load_data, bg=bgColour, borderwidth=0,
+                                     highlightthickness=0, activebackground=bgColour,
+                                     command=self.load_data_action, cursor="hand2")
+        #self.main_button.pack(pady=30)
 
     # Funkcje
     def get_separator(self, button):
@@ -219,7 +218,8 @@ class App(tk.Tk):
 
     def anal_action(self):
         self.disable_button(self.anal_button, self.data_button, self.map_button)
-        self.update_main_frame([self.left_frame, "left", True, None, 0, 0], [self.plot_frame, "right", True, None, 0, 0])
+        self.update_main_frame([self.left_frame, "left", True, None, 0, 0],
+                               [self.plot_frame, "right", True, None, 0, 0])
         self.plot_data(data_file)
 
 
@@ -229,7 +229,8 @@ class App(tk.Tk):
 
     def data_action(self):
         self.disable_button(self.data_button, self.anal_button, self.map_button)
-        self.update_main_frame([tk.Label(self.main_frame, text="Data content here", bg=bgColour, fg=fontColour), "left", False, None, 0, 0])
+        self.update_main_frame([self.image_label, None, False, None, 0, (100, 0)],
+                               [self.laduj_dane, None, False, None, 0, 30])
 
     @classmethod
     def parser(cls, file_path):
