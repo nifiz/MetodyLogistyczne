@@ -225,11 +225,11 @@ class App(tk.Tk):
 
     def map_action(self):
         self.disable_button(self.map_button, self.data_button, self.anal_button)
-        self.update_main_frame(tk.Label(self.main_frame, text="Map content here", bg=bgColour, fg=fontColour), "left", False, None, 0, 0)
+        self.update_main_frame([tk.Label(self.main_frame, text="Map content here", bg=bgColour, fg=fontColour), "left", False, None, 0, 0])
 
     def data_action(self):
         self.disable_button(self.data_button, self.anal_button, self.map_button)
-        self.update_main_frame(tk.Label(self.main_frame, text="Data content here", bg=bgColour, fg=fontColour), "left", False, None, 0, 0)
+        self.update_main_frame([tk.Label(self.main_frame, text="Data content here", bg=bgColour, fg=fontColour), "left", False, None, 0, 0])
 
     @classmethod
     def parser(cls, file_path):
