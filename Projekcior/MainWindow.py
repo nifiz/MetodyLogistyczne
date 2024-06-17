@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import numpy as np
 
 frameHeight = 100
 menuWidth = 135
@@ -13,7 +16,7 @@ bgColour = "#141218"
 borderColour = "#6750A4"
 fontColour = "#CAC4D0"
 disabledfontColour = "#E6E0E9"
-activeButtonBgColour = "#a680ff"
+activeButtonBgColour = "#72668A"
 
 
 class App(tk.Tk):
@@ -105,14 +108,6 @@ class App(tk.Tk):
         self.main_frame = tk.Frame(self, bg=bgColour)
         self.main_frame.pack(expand=True, fill=tk.BOTH)
 
-        self.image_label = tk.Label(self.main_frame, image=self.empty_state_image, bg=bgColour)
-        self.image_label.pack(pady=(100, 0))
-
-        self.main_button = tk.Button(self.main_frame, image=self.load_data, bg=bgColour, borderwidth=0,
-                                     highlightthickness=0, activebackground=bgColour,
-                                     command=self.load_data_action, cursor="hand2")
-        self.main_button.pack(pady=30)
-
         # Klikniecie w burgera
         self.menu_frame = tk.Frame(self.main_frame, bg=bgColour, highlightbackground=borderColour, highlightthickness=1)
 
@@ -127,17 +122,31 @@ class App(tk.Tk):
 
         self.menu_button1 = tk.Button(self.menu_frame1, text="Wczytaj dane", bg=bgColour, fg="white",
                                       activebackground=activeButtonBgColour, cursor="hand2", borderwidth=0,
-                                      font="Roboto 12", height=2, command=self.load_data_action)
+                                      font="Roboto 12", height=2, activeforeground="white",
+                                      command=self.load_data_action)
         self.menu_button2 = tk.Button(self.menu_frame2, text="Zapisz", bg=bgColour, fg="white",
                                       activebackground=activeButtonBgColour, cursor="hand2",borderwidth=0,
-                                      font="Roboto 12", height=2, command=self.save_to_file)
+                                      font="Roboto 12", height=2, activeforeground="white", command=self.save_to_file)
         self.menu_button3 = tk.Button(self.menu_frame3, text="Wyjdź", bg=bgColour, fg="white",
                                       activebackground=activeButtonBgColour, cursor="hand2",borderwidth=0,
-                                      font="Roboto 12", height=2, command=self.destroy)
+                                      font="Roboto 12", height=2, activeforeground="white", command=self.destroy)
 
         self.menu_button1.pack(fill="x")
         self.menu_button2.pack(fill="x")
         self.menu_button3.pack(fill="x")
+
+        # Anal button co ma sie pojawic po kliknieciu co to za skladnia ???
+        self.left_frame = tk.Frame(self.main_frame, width=300, height=600, bg="#1E1B22")
+        self.plot_frame = tk.Frame(self.main_frame, bg=bgColour)
+
+        # Data button co ma sie pojawic po kliknieciu
+        self.image_label = tk.Label(self.main_frame, image=self.empty_state_image, bg=bgColour)
+        #self.image_label.pack(pady=(100, 0))
+
+        self.laduj_dane = tk.Button(self.main_frame, image=self.load_data, bg=bgColour, borderwidth=0,
+                                     highlightthickness=0, activebackground=bgColour,
+                                     command=self.load_data_action, cursor="hand2")
+        #self.main_button.pack(pady=30)
 
     # Funkcje
     def get_separator(self, button):
@@ -160,6 +169,41 @@ class App(tk.Tk):
             separator = self.get_separator(button)
             separator.place_configure(rely=1.0, y=-1000)
 
+    def update_main_frame(self, *new_content):
+        for widget in self.main_frame.winfo_children():
+            widget.pack_forget()
+        for i in new_content:
+            i[0].pack(side=i[1], expand=i[2], fill=i[3], padx=i[4], pady=i[5])
+
+    def plot_data(self, file_path):
+        df = self.parser(data_file)
+
+        fig, ax = plt.subplots(figsize=(12, 7))
+        fig.patch.set_facecolor(bgColour)
+        fig.patch.set_edgecolor('red')
+        ax.tick_params(axis='x', colors=fontColour)
+        ax.tick_params(axis='y', colors=fontColour)
+        plt.xticks(np.arange(0, 460, 50))
+        #ax.plot(df['date'], df['dav'], label='DAV')
+        #ax.plot(df['date'], df['dane_dostaw'], label='Dane Dostaw')
+        ax.plot(df['date'], df['ULG95'], label='ULG95')
+        ax.plot(df['date'], df['DK'], label='DK')
+        ax.plot(df['date'], df['ULTSU'], label='ULTSU')
+        ax.plot(df['date'], df['ULTDK'], label='ULTDK')
+        ax.grid(True, color="#332F3D")
+        ax.set_facecolor(bgColour)
+
+        ax.set_xlabel("Data", color=fontColour)
+        ax.set_ylabel("Wartości", color=fontColour)
+        ax.legend(loc="upper right")
+
+        for widget in self.plot_frame.winfo_children():
+            widget.destroy()
+
+        canvas = FigureCanvasTkAgg(fig, master=self.plot_frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack(expand=True, fill=tk.BOTH)
+
     def menu_action(self):
         if self.menu_frame.winfo_ismapped():
             self.menu_frame.place_forget()
@@ -174,29 +218,53 @@ class App(tk.Tk):
 
     def anal_action(self):
         self.disable_button(self.anal_button, self.data_button, self.map_button)
+        self.update_main_frame([self.left_frame, "left", True, None, 0, 0],
+                               [self.plot_frame, "right", True, None, 0, 0])
+        self.plot_data(data_file)
+
 
     def map_action(self):
         self.disable_button(self.map_button, self.data_button, self.anal_button)
+        self.update_main_frame([tk.Label(self.main_frame, text="Map content here", bg=bgColour, fg=fontColour), "left", False, None, 0, 0])
 
     def data_action(self):
         self.disable_button(self.data_button, self.anal_button, self.map_button)
+        self.update_main_frame([self.image_label, None, False, None, 0, (100, 0)],
+                               [self.laduj_dane, None, False, None, 0, 30])
 
+    @classmethod
     def parser(cls, file_path):
         df = pd.read_excel(file_path, sheet_name='Deliveries per Customer (detail', skiprows=9)
 
-        date = df["Unnamed: 0"]
-        dav = df["Unnamed: 2"]
-        time = df["Unnamed: 3"]
-        dane_dostaw = df["Unnamed: 25"]
-        ULG95 = df["Unnamed: 26"]
-        DK = df["Unnamed: 27"]
-        ULTSU = df["Unnamed: 28"]
-        ULTDK = df["Unnamed: 29"]
+        df = df.iloc[2:460]
+
+        # Przekształcenie kolumn na odpowiednie typy
+        df["Unnamed: 0"] = df["Unnamed: 0"].astype(str)
+        df["Unnamed: 2"] = df["Unnamed: 2"].astype(str)
+        df["Unnamed: 3"] = df["Unnamed: 3"].astype(str)
+        #df["Unnamed: 25"] = df["Unnamed: 25"].astype(float)
+        df["Unnamed: 26"] = df["Unnamed: 26"].astype(float)
+        df["Unnamed: 27"] = df["Unnamed: 27"].astype(float)
+        df["Unnamed: 28"] = df["Unnamed: 28"].astype(float)
+        df["Unnamed: 29"] = df["Unnamed: 29"].astype(float)
+        df = df.iloc[2:]
+        data = {
+            "date": df["Unnamed: 0"],
+            "dav": df["Unnamed: 2"],
+            "time": df["Unnamed: 3"],
+            #"dane_dostaw": df["Unnamed: 25"],
+            "ULG95": df["Unnamed: 27"],
+            "DK": df["Unnamed: 28"],
+            "ULTSU": df["Unnamed: 29"],
+            "ULTDK": df["Unnamed: 30"]
+        }
+
+        return pd.DataFrame(data)
 
     def load_data_action(self):
+        global data_file
         data_file = filedialog.askopenfilename(title="Wybierz plik z danymi",
                                                filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")])
-        self.parser(data_file)
 
 
 
