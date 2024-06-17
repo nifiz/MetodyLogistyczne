@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
+import Prawdopodobienstwa
 
 frameHeight = 100
 menuWidth = 135
@@ -17,7 +18,7 @@ borderColour = "#6750A4"
 fontColour = "#CAC4D0"
 disabledfontColour = "#E6E0E9"
 activeButtonBgColour = "#72668A"
-
+predictedDays = 20
 
 class App(tk.Tk):
     def __init__(self):
@@ -28,6 +29,10 @@ class App(tk.Tk):
         self.geometry("1920x1080")
         self.configure(background=bgColour)
         self.state("zoomed")
+        self.x_axis_titles_enabled = True
+        self.y_axis_titles_enabled = True
+        self.legend_enabled = True
+        self.fig = None
 
         # Zeby sie nie psulo przy zumie
         try:
@@ -59,6 +64,8 @@ class App(tk.Tk):
         self.empty_state_image = tk.PhotoImage(file=r"img\empty-state-image.png")
         self.exit_button_img = tk.PhotoImage(file=r"img\exit_button.png")
         self.load_data = tk.PhotoImage(file=r"img\load_data.png")
+        self.switch_on_img = tk.PhotoImage(file=r"img\Switch-on.png")
+        self.switch_off_img = tk.PhotoImage(file=r"img\Switch-off.png")
 
         # Przyciski
         self.menu_button = tk.Button(toolbarMenu, image=self.menu_image, bg=bgColour, height=15, width=18,
@@ -125,28 +132,75 @@ class App(tk.Tk):
                                       font="Roboto 12", height=2, activeforeground="white",
                                       command=self.load_data_action)
         self.menu_button2 = tk.Button(self.menu_frame2, text="Zapisz", bg=bgColour, fg="white",
-                                      activebackground=activeButtonBgColour, cursor="hand2",borderwidth=0,
+                                      activebackground=activeButtonBgColour, cursor="hand2", borderwidth=0,
                                       font="Roboto 12", height=2, activeforeground="white", command=self.save_to_file)
         self.menu_button3 = tk.Button(self.menu_frame3, text="Wyjdź", bg=bgColour, fg="white",
-                                      activebackground=activeButtonBgColour, cursor="hand2",borderwidth=0,
+                                      activebackground=activeButtonBgColour, cursor="hand2", borderwidth=0,
                                       font="Roboto 12", height=2, activeforeground="white", command=self.destroy)
 
         self.menu_button1.pack(fill="x")
         self.menu_button2.pack(fill="x")
         self.menu_button3.pack(fill="x")
 
-        # Anal button co ma sie pojawic po kliknieciu co to za skladnia ???
-        self.left_frame = tk.Frame(self.main_frame, width=300, height=600, bg="#1E1B22")
-        self.plot_frame = tk.Frame(self.main_frame, bg=bgColour)
 
-        # Data button co ma sie pojawic po kliknieciu
+        # Anal button - co ma sie pojawic po kliknieciu co to za skladnia ???; nie wiem?-adrian
+        self.main_anal_frame = tk.Frame(self, bg="#141218")
+        self.left_anal_frame = tk.Frame(self.main_anal_frame, width=400, height=400, bg="#1D1A20", pady=75)
+
+        self.entry_frame = tk.Frame(self.left_anal_frame, bg="#36343B", pady=10, width=200, height=120)
+        self.entry_frame.pack(side="top")
+        self.entry_label = tk.Label(self.entry_frame, text="Liczba dni", bg="#36343B", fg="#E6E0E9")
+        self.entry_label.pack(side="left", padx=(0, 5))
+        self.entry = tk.Entry(self.entry_frame, bg="#36343B", fg="#E6E0E9", insertbackground="#36343B", relief="flat", textvariable=tk.StringVar())
+        self.entry.pack(side="left")
+        self.entry.insert(0,"20")
+
+        self.entry_btn_frame = tk.Frame(self.left_anal_frame, width=10, height=10, bg="#1D1A20", pady=10)
+        self.entry_button = tk.Button(self.entry_btn_frame, bg="#4A4458", fg="white", width=20, borderwidth=0,
+                                        activebackground=activeButtonBgColour, cursor="hand2", text="aktualizuj wykres",
+                                        height=2, activeforeground="white", command=self.update_plot)
+        self.entry_btn_frame.pack(side="top", pady=5, padx=10)
+        self.entry_button.pack(side="top", pady=10, padx=10)
+
+        self.first_btn_frame = tk.Frame(self.left_anal_frame, width=200, height=100, bg="#1D1A20", pady=10)
+        self.config_button1_label = tk.Label(self.first_btn_frame, text="Tytuł osi X", bg="#4A4458", fg="#E8DEF8")
+        self.config_button1 = tk.Button(self.first_btn_frame, bg="#1D1A20", fg="white", width=60, borderwidth=0,
+                                      activebackground=activeButtonBgColour, cursor="hand2", image=self.switch_on_img,
+                                      height=30, activeforeground="white", command=self.disable_x_axis_titles)
+        self.first_btn_frame.pack(side="top", fill="x", pady=5)
+        self.config_button1.pack(side="right", pady=10, padx=10)
+        self.config_button1_label.pack(side="left", pady=10, padx=10)
+
+        self.second_btn_frame = tk.Frame(self.left_anal_frame, width=200, height=100, bg="#1D1A20", pady=10)
+        self.config_button2_label = tk.Label(self.second_btn_frame, text="Tytuł osi Y", bg="#4A4458", fg="#E8DEF8")
+        self.config_button2 = tk.Button(self.second_btn_frame, bg="#1D1A20", fg="white", width=60, borderwidth=0,
+                                        activebackground=activeButtonBgColour, cursor="hand2", image=self.switch_on_img,
+                                        height=30, activeforeground="white", command=self.disable_y_axis_titles)
+        self.second_btn_frame.pack(side="top", fill="x", pady=5)
+        self.config_button2.pack(side="right", pady=10, padx=10)
+        self.config_button2_label.pack(side="left", pady=10, padx=10)
+
+        self.third_btn_frame = tk.Frame(self.left_anal_frame, width=200, height=100, bg="#1D1A20", pady=10)
+        self.config_button3_label = tk.Label(self.third_btn_frame, text="Legenda", bg="#4A4458", fg="#E8DEF8")
+        self.config_button3 = tk.Button(self.third_btn_frame, bg="#1D1A20", fg="white", width=60, borderwidth=0,
+                                        activebackground=activeButtonBgColour, cursor="hand2", image=self.switch_on_img,
+                                        height=30, activeforeground="white", command=self.toggle_legend)
+        self.third_btn_frame.pack(side="top", fill="x", pady=5)
+        self.config_button3.pack(side="right", pady=10, padx=10)
+        self.config_button3_label.pack(side="left", pady=10, padx=10)
+
+        self.plot_anal_frame = tk.Frame(self.main_anal_frame, width=300, height=600, bg="#FFFFFF")
+        # self.plot_anal_frame.pack(side="right", fill="both", expand=True)
+
+
+        # Data button - co ma sie pojawic po kliknieciu
         self.image_label = tk.Label(self.main_frame, image=self.empty_state_image, bg=bgColour)
-        #self.image_label.pack(pady=(100, 0))
+        # self.image_label.pack(pady=(100, 0))
 
         self.laduj_dane = tk.Button(self.main_frame, image=self.load_data, bg=bgColour, borderwidth=0,
-                                     highlightthickness=0, activebackground=bgColour,
-                                     command=self.load_data_action, cursor="hand2")
-        #self.main_button.pack(pady=30)
+                                    highlightthickness=0, activebackground=bgColour,
+                                    command=self.load_data_action, cursor="hand2")
+        # self.main_button.pack(pady=30)
 
     # Funkcje
     def get_separator(self, button):
@@ -184,8 +238,8 @@ class App(tk.Tk):
         ax.tick_params(axis='x', colors=fontColour)
         ax.tick_params(axis='y', colors=fontColour)
         plt.xticks(np.arange(0, 460, 50))
-        #ax.plot(df['date'], df['dav'], label='DAV')
-        #ax.plot(df['date'], df['dane_dostaw'], label='Dane Dostaw')
+        # ax.plot(df['date'], df['dav'], label='DAV')
+        # ax.plot(df['date'], df['dane_dostaw'], label='Dane Dostaw')
         ax.plot(df['date'], df['ULG95'], label='ULG95')
         ax.plot(df['date'], df['DK'], label='DK')
         ax.plot(df['date'], df['ULTSU'], label='ULTSU')
@@ -197,10 +251,10 @@ class App(tk.Tk):
         ax.set_ylabel("Wartości", color=fontColour)
         ax.legend(loc="upper right")
 
-        for widget in self.plot_frame.winfo_children():
+        for widget in self.plot_anal_frame.winfo_children():
             widget.destroy()
 
-        canvas = FigureCanvasTkAgg(fig, master=self.plot_frame)
+        canvas = FigureCanvasTkAgg(fig, master=self.plot_anal_frame)
         canvas.draw()
         canvas.get_tk_widget().pack(expand=True, fill=tk.BOTH)
 
@@ -218,16 +272,19 @@ class App(tk.Tk):
 
     def anal_action(self):
         self.disable_button(self.anal_button, self.data_button, self.map_button)
-        self.update_main_frame([self.left_frame, "left", True, None, 0, 0],
-                               [self.plot_frame, "right", True, None, 0, 0])
-        self.plot_data(data_file)
-
+        self.update_main_frame([self.main_anal_frame, None, True, "both", 0, 0],
+                               [self.left_anal_frame, "left", True, None, 0, 0],
+                               [self.plot_anal_frame, "right", True, "both", 0, 0])
+        self.create_anal_content(predictedDays)
 
     def map_action(self):
+        self.main_anal_frame.pack_forget()
         self.disable_button(self.map_button, self.data_button, self.anal_button)
-        self.update_main_frame([tk.Label(self.main_frame, text="Map content here", bg=bgColour, fg=fontColour), "left", False, None, 0, 0])
+        self.update_main_frame(
+            [tk.Label(self.main_frame, text="Map content here", bg=bgColour, fg=fontColour), "left", False, None, 0, 0])
 
     def data_action(self):
+        self.main_anal_frame.pack_forget()
         self.disable_button(self.data_button, self.anal_button, self.map_button)
         self.update_main_frame([self.image_label, None, False, None, 0, (100, 0)],
                                [self.laduj_dane, None, False, None, 0, 30])
@@ -242,7 +299,7 @@ class App(tk.Tk):
         df["Unnamed: 0"] = df["Unnamed: 0"].astype(str)
         df["Unnamed: 2"] = df["Unnamed: 2"].astype(str)
         df["Unnamed: 3"] = df["Unnamed: 3"].astype(str)
-        #df["Unnamed: 25"] = df["Unnamed: 25"].astype(float)
+        # df["Unnamed: 25"] = df["Unnamed: 25"].astype(float)
         df["Unnamed: 26"] = df["Unnamed: 26"].astype(float)
         df["Unnamed: 27"] = df["Unnamed: 27"].astype(float)
         df["Unnamed: 28"] = df["Unnamed: 28"].astype(float)
@@ -252,7 +309,7 @@ class App(tk.Tk):
             "date": df["Unnamed: 0"],
             "dav": df["Unnamed: 2"],
             "time": df["Unnamed: 3"],
-            #"dane_dostaw": df["Unnamed: 25"],
+            # "dane_dostaw": df["Unnamed: 25"],
             "ULG95": df["Unnamed: 27"],
             "DK": df["Unnamed: 28"],
             "ULTSU": df["Unnamed: 29"],
@@ -266,9 +323,118 @@ class App(tk.Tk):
         data_file = filedialog.askopenfilename(title="Wybierz plik z danymi",
                                                filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")])
 
+    def create_anal_content(self, days):
+        data = Prawdopodobienstwa.TOTAL(days)
+        print(days)
 
+        categories = ['TOTAL', 'ULG95', 'DK', 'ULTSU', 'ULTDK']
+        transformed_data = {category: [] for category in categories}
 
+        for key in data:
+            for entry in data[key]:
+                for category in categories:
+                    if category in entry:
+                        transformed_data[category].append(entry[category])
 
+        colors = ['blue', 'green', 'red', 'purple', 'orange']
 
-    def say_hello(self):
-        print("sample_text")
+        if self.fig is not None:
+            plt.close(self.fig)  # Zamknięcie poprzedniego wykresu
+            print("usuniety wykres")
+
+        self.fig, axs = plt.subplots(len(categories), figsize=(10, 12))
+
+        for idx, category in enumerate(categories):
+            axs[idx].plot(range(1, days + 1), transformed_data[category], marker='o', label=category, color=colors[idx])
+            axs[idx].set_xlim(1, days)
+            axs[idx].set_xlabel('Dni dostaw')
+            axs[idx].set_ylabel('Dane dostaw')
+            axs[idx].legend()
+            axs[idx].xaxis.set_major_locator(plt.MaxNLocator(integer=True))
+
+        plt.tight_layout()
+
+        # Usuń poprzednie płótno, jeśli istnieje
+        if hasattr(self, 'canvas'):
+            self.canvas.get_tk_widget().destroy()
+            print("usuniete plotno")
+
+        # Osadzanie wykresu w Tkinter
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.plot_anal_frame)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
+    def create_date_picker(self, label_text):
+        frame = tk.Frame(self.left_anal_frame, bg="#36343B", pady=10)
+
+        label = tk.Label(frame, text=label_text, bg="#36343B", fg="#E6E0E9")
+        label.pack(side="left", padx=(0, 5))
+
+        self.entry = tk.Entry(frame, bg="#36343B", fg="#E6E0E9", insertbackground="#36343B", relief="flat")
+        self.entry.pack(side="left", expand=True)
+
+        return frame
+
+    def disable_x_axis_titles(self):
+        self.switch_on_img1 = tk.PhotoImage(file=r"img\Switch-on.png")
+        self.switch_off_img1 = tk.PhotoImage(file=r"img\Switch-off.png")
+
+        self.x_axis_titles_enabled = not self.x_axis_titles_enabled  # Przełącz stan
+
+        if self.x_axis_titles_enabled:
+            self.config_button1.config(image=self.switch_on_img1)
+        else:
+            self.config_button1.config(image=self.switch_off_img1)
+
+        for ax in self.fig.axes:
+            if self.x_axis_titles_enabled:
+                ax.set_xlabel('Dni dostaw')
+            else:
+                ax.set_xlabel('')  # Ustaw pusty tytuł dla osi X
+
+        self.fig.canvas.draw_idle()  # Odśwież wykres po zmianach
+
+    def disable_y_axis_titles(self):
+        self.switch_on_img2 = tk.PhotoImage(file=r"img\Switch-on.png")
+        self.switch_off_img2 = tk.PhotoImage(file=r"img\Switch-off.png")
+
+        self.y_axis_titles_enabled = not self.y_axis_titles_enabled  # Przełącz stan
+
+        if self.y_axis_titles_enabled:
+            self.config_button2.config(image=self.switch_on_img2)
+        else:
+            self.config_button2.config(image=self.switch_off_img2)
+
+        for ax in self.fig.axes:
+            if self.y_axis_titles_enabled:
+                ax.set_ylabel('Dane dostaw')
+            else:
+                ax.set_ylabel('')  # Ustaw pusty tytuł dla osi Y
+
+        self.fig.canvas.draw_idle()  # Odśwież wykres po zmianach
+
+    def toggle_legend(self):
+        self.switch_on_img3 = tk.PhotoImage(file=r"img\Switch-on.png")
+        self.switch_off_img3 = tk.PhotoImage(file=r"img\Switch-off.png")
+
+        self.legend_enabled = not self.legend_enabled  # Przełącz stan legendy
+
+        if self.legend_enabled:
+            self.config_button3.config(image=self.switch_on_img3)
+        else:
+            self.config_button3.config(image=self.switch_off_img3)
+
+        for ax in self.fig.axes:
+            if self.legend_enabled:
+                ax.legend().set_visible(True)
+            else:
+                ax.legend().set_visible(False)
+
+        self.fig.canvas.draw_idle()  # Odśwież wykres po zmianach
+
+    def update_plot(self):
+        try:
+            days = int(self.entry.get())
+            self.create_anal_content(days)
+        except ValueError:
+            print("Proszę wprowadzić prawidłową liczbę dni.")
